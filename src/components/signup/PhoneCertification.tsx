@@ -98,7 +98,8 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
           setIsRequest(true);
           setBtnStatus('THIRD');
         }
-      } catch (error: string) {
+        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+      } catch (error: any) {
         const errorResponse = error.response.data;
         const errorCode = errorResponse.errorCode;
         const select = signError.find((item) => item.errorCode === errorCode);
