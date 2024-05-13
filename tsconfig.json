@@ -15,18 +15,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@app/*": [
-        "src/app/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@types/*": [
-        "src/types/*"
-      ], 
-      "@utils/*": [
-        "src/utils/*"
-      ],
+      "@app/*": ["src/app/*"],
+      "@components/*": ["src/components/*"],
+      "@types/*": ["src/types/*"],
+      "@utils/*": ["src/utils/*"],
+      "@constant/*": ["src/constant/*"],
+      "@models/*": ["src/models/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.mjs",],
