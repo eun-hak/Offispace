@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import React, { SetStateAction, useEffect, useState } from 'react';
 import ToBack from '../shared/sign/ToBack';
 import Image from 'next/image';
@@ -8,7 +6,7 @@ import dynamic from 'next/dynamic';
 import Terms from './Terms';
 import { JobPositionType } from '@/models/jobPosition';
 import { jobPosition } from '@/constant/jobPosition';
-
+/* eslint-disable no-unused-vars */
 const JobPosition = dynamic(() => import('./JobPosition'), {
   ssr: false
 });

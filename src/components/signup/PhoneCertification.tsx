@@ -1,5 +1,3 @@
-/* eslint-disable no-unused-vars */
-
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import ToBack from '../shared/sign/ToBack';
 import { SignupBtnStatus } from '@/models/signupBtnStatus';
@@ -9,7 +7,7 @@ import { useMutation } from 'react-query';
 import { phoneauthrequest, phoneauthverify } from '@/api/auth/auth.post.api';
 import { ApplyValues } from '@/models/applyValues';
 import { signError } from '@/constant/signError';
-
+/* eslint-disable no-unused-vars */
 interface PhoneCertificationProps {
   onNext: (phoneNumber: ApplyValues['memberPhone']) => void;
 }
@@ -100,7 +98,6 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
           setIsRequest(true);
           setBtnStatus('THIRD');
         }
-        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       } catch (error: any) {
         const errorResponse = error.response.data;
         const errorCode = errorResponse.errorCode;
@@ -131,7 +128,6 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
         if (status == 'SUCCESS') {
           onNext(phoneNumber);
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
         const errorResponse = error.response.data;
         const errorCode = errorResponse.errorCode;

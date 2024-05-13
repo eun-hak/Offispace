@@ -14,7 +14,6 @@ const JobPosition = ({ setJobModal, setSelectedJob, selectedJob }: JobPositionPr
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
   const [selectPosition, setSelectPosition] = useState<string | null>(null);
   const [initialPosition, setInitialPosition] = useState<string>(selectedJob);
 
@@ -27,6 +26,7 @@ const JobPosition = ({ setJobModal, setSelectedJob, selectedJob }: JobPositionPr
   const handleClick = (title: string) => {
     setInitialPosition('');
     setSelectPosition(title);
+    setSelectedJob(title);
   };
 
   const handleSubmit = () => {

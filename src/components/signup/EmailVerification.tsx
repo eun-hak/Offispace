@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable no-unused-vars */
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import ToBack from '../shared/sign/ToBack';
 import { useMutation } from 'react-query';
@@ -10,7 +8,7 @@ import { ApplyValues } from '@/models/applyValues';
 import { invertSecond } from '@/utils/invertSecond';
 import { SignupBtnStatus } from '@/models/signupBtnStatus';
 import { signError } from '@/constant/signError';
-
+/* eslint-disable no-unused-vars */
 interface EmailVerification {
   onNext: (name: ApplyValues['memberName'], email: ApplyValues['memberEmail']) => void;
 }

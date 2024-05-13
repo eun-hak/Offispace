@@ -1,6 +1,4 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable  react-hooks/exhaustive-deps */
-
 import React, { useEffect, useState } from 'react';
 
 interface JobPositionItemProps {
@@ -24,7 +22,7 @@ const JobPositionItem = ({
     } else {
       setIsInitSelect(false);
     }
-  }, [initialPosition]);
+  }, [initialPosition, setIsInitSelect, title]);
 
   return (
     <div className="mt-[17px] cursor-pointer" onClick={() => handleClick(title)}>
