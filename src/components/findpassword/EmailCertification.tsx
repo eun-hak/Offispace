@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ChangeEvent, Dispatch, useEffect, useRef, useState } from 'react';
 import ToBack from '../shared/sign/ToBack';
 import { SignupBtnStatus } from '@/models/signupBtnStatus';
@@ -5,6 +6,7 @@ import { motion } from 'framer-motion';
 import { useMutation } from 'react-query';
 import { invertSecond } from '@/utils/invertSecond';
 import { emailauthrequest, emailauthverify } from '@/api/auth/auth.post.api';
+import { signError } from '@/constant/signError';
 
 interface EmailCertificationProps {
   setStep: Dispatch<React.SetStateAction<number>>;
@@ -17,10 +19,10 @@ const EmailCertification = ({ setStep }: EmailCertificationProps) => {
   const [isRequest, setIsRequest] = useState(false);
   const [validNumber, setValidNumber] = useState<string>('');
   const [validTime, setValidTime] = useState<number>(300);
-  const [isError, setIsError] = useState(false);
-  const [emailError, setEmailError] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const startRef = useRef<HTMLInputElement>(null);
+  //추가
+  const [errorMessage, setErrorMessage] = useState('');
 
   const { mutateAsync: emailRequest } = useMutation((email: string) => {
     return emailauthrequest({ emailAddress: email });
@@ -65,14 +67,13 @@ const EmailCertification = ({ setStep }: EmailCertificationProps) => {
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
-    if (isError || emailError) {
+    if (errorMessage != '') {
       timeoutId = setTimeout(() => {
-        setIsError(false);
-        setEmailError(false);
+        setErrorMessage('');
       }, 4000);
     }
     return () => clearTimeout(timeoutId);
-  }, [isError, emailError]);
+  }, [errorMessage]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -88,37 +89,51 @@ const EmailCertification = ({ setStep }: EmailCertificationProps) => {
 
   const handleClick = async () => {
     if (btnStatus == 'SECOND') {
-      const { status } = (await emailRequest(userEmail)) as { status: string };
-      if (status == 'SUCCESS') {
-        setIsRequest(true);
-        setBtnStatus('THIRD');
-      }
-      if (status == 'FAIL') {
-        setUserEmail('');
-        setEmailError(true);
-        return;
+      try {
+        const { status } = await emailRequest(userEmail);
+        if (status == 'SUCCESS') {
+          setIsRequest(true);
+          setBtnStatus('THIRD');
+        }
+      } catch (error: any) {
+        const errorResponse = error.response.data;
+        const errorCode = errorResponse.errorCode;
+        const select = signError.find((item) => item.errorCode === errorCode);
+        if (select) {
+          setErrorMessage(select.message);
+          setUserEmail('');
+          setBtnStatus('FIRST');
+          startRef.current?.focus();
+          return;
+        }
       }
     }
     if (btnStatus == 'THIRD') {
       if (validNumber.length != 6) {
         setValidNumber('');
-        setIsError(true);
+        setErrorMessage('6자리 코드를 입력해주세요.');
         inputRef.current?.focus();
         return;
       }
-      const { status } = (await emailVerify({
-        emailAddress: userEmail,
-        code: Number(validNumber)
-      })) as { status: string };
+      try {
+        const { status } = (await emailVerify({
+          emailAddress: userEmail,
+          code: Number(validNumber)
+        })) as { status: string };
 
-      if (status == 'SUCCESS') {
-        setStep((prev) => prev + 1);
-      }
-      if (status == 'FAIL') {
-        setValidNumber('');
-        setIsError(true);
-        inputRef.current?.focus();
-        return;
+        if (status == 'SUCCESS') {
+          setStep((prev) => prev + 1);
+        }
+      } catch (error: any) {
+        const errorResponse = error.response.data;
+        const errorCode = errorResponse.errorCode;
+        const select = signError.find((item) => item.errorCode === errorCode);
+        if (select) {
+          setErrorMessage(select.message);
+          setValidNumber('');
+          inputRef.current?.focus();
+          return;
+        }
       }
     }
   };
@@ -176,6 +191,7 @@ const EmailCertification = ({ setStep }: EmailCertificationProps) => {
                 value={userEmail}
                 onChange={handleEmailChange}
                 ref={startRef}
+                autoComplete="off"
               />
             </div>
             <button
@@ -190,10 +206,10 @@ const EmailCertification = ({ setStep }: EmailCertificationProps) => {
             </button>
           </div>
         </div>
-        {emailError ? (
+        {errorMessage != '' && isRequest === false ? (
           <div className="flex ml-4">
             <div className="text-red-700 text-xs font-normal font-pretendard leading-tight">
-              *등록되지 않은 이메일입니다.
+              {errorMessage}
             </div>
           </div>
         ) : (
@@ -202,12 +218,22 @@ const EmailCertification = ({ setStep }: EmailCertificationProps) => {
       </motion.div>
 
       {isRequest && (
-        <>
+        <motion.div
+          initial={{ opacity: 0, translateX: -90 }}
+          transition={{
+            duration: 0.4,
+            ease: 'easeInOut',
+            delay: 0.6
+          }}
+          animate={{
+            opacity: 1,
+            translateX: 0
+          }}>
           <div className="mt-[48px] border-b border-neutral-300 ml-4">
-            {isError ? (
+            {errorMessage != '' ? (
               <div className="flex flex-row-reverse">
                 <div className="text-red-700 text-xs font-normal font-pretendard leading-tight">
-                  *올바르지 않은 코드입니다.
+                  {errorMessage}
                 </div>
               </div>
             ) : (
@@ -241,7 +267,7 @@ const EmailCertification = ({ setStep }: EmailCertificationProps) => {
               이메일로 발송된 코드를 입력해주세요.
             </div>
           </div>
-        </>
+        </motion.div>
       )}
     </div>
   );

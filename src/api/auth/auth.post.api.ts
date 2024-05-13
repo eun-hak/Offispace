@@ -1,5 +1,4 @@
 // import { ICommon } from '../types/common';
-import { basicResponse } from '../../models/response';
 import { postRequest } from '../request';
 import {
   ISignIn,
@@ -10,6 +9,7 @@ import {
   IPhoneNumber,
   IPhoneAuth
 } from '../types/auth';
+import { ICommon } from '../types/common';
 
 /* 회원가입 */
 
@@ -17,20 +17,16 @@ export const signup = async ({
   memberEmail,
   memberPassword,
   memberName,
-  memberGender,
   memberJob,
   memberPhone,
-  memberBirthDate,
   memberSmsAgree
 }: ISignUp) => {
-  const response = await postRequest<null, ISignUp>('members', {
+  const response = await postRequest<ICommon<null>, ISignUp>('members', {
     memberEmail,
     memberPassword,
     memberName,
-    memberGender,
     memberJob,
     memberPhone,
-    memberBirthDate,
     memberSmsAgree
   });
   return response;
@@ -50,7 +46,7 @@ export const signin = async ({ memberEmail, memberPassword }: ISignIn) => {
 /* 이메일 인증 요청 */
 
 export const emailauthrequest = async ({ emailAddress }: IEmail) => {
-  const response = await postRequest<null, IEmail>('auth/email', {
+  const response = await postRequest<ICommon<null>, IEmail>(`auth/email`, {
     emailAddress
   });
 
@@ -60,7 +56,7 @@ export const emailauthrequest = async ({ emailAddress }: IEmail) => {
 /* 이메일 코드 검증 */
 
 export const emailauthverify = async ({ emailAddress, code }: IEmailAuth) => {
-  const response = await postRequest<null, IEmailAuth>('auth/email/verify', {
+  const response = await postRequest<ICommon<null>, IEmailAuth>(`auth/email/verify`, {
     emailAddress,
     code
   });
@@ -71,7 +67,7 @@ export const emailauthverify = async ({ emailAddress, code }: IEmailAuth) => {
 /* 휴대전화 번호 인증 요청*/
 
 export const phoneauthrequest = async ({ phoneNumber }: IPhoneNumber) => {
-  const response = await postRequest<null, IPhoneNumber>(`auth/phone`, {
+  const response = await postRequest<ICommon<null>, IPhoneNumber>(`auth/phone`, {
     phoneNumber
   });
 
@@ -81,7 +77,7 @@ export const phoneauthrequest = async ({ phoneNumber }: IPhoneNumber) => {
 /* 휴대전화 번호 코드 검증*/
 
 export const phoneauthverify = async ({ phoneNumber, code }: IPhoneAuth) => {
-  const response = await postRequest<null, IPhoneAuth>(`auth/phone/verify`, {
+  const response = await postRequest<ICommon<null>, IPhoneAuth>(`auth/phone/verify`, {
     phoneNumber,
     code
   });

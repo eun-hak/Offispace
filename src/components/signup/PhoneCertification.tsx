@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import ToBack from '../shared/sign/ToBack';
 import { SignupBtnStatus } from '@/models/signupBtnStatus';
@@ -6,6 +7,7 @@ import { invertSecond } from '@/utils/invertSecond';
 import { useMutation } from 'react-query';
 import { phoneauthrequest, phoneauthverify } from '@/api/auth/auth.post.api';
 import { ApplyValues } from '@/models/applyValues';
+import { signError } from '@/constant/signError';
 
 interface PhoneCertificationProps {
   onNext: (phoneNumber: ApplyValues['memberPhone']) => void;
@@ -16,8 +18,9 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
   const [btnStatus, setBtnStatus] = useState<SignupBtnStatus>('FIRST');
   const [isRequest, setIsRequest] = useState(false);
   const [validNumber, setValidNumber] = useState<string>('');
-  const [validTime, setValidTime] = useState<number>(180);
-  const [isError, setIsError] = useState(false);
+  const [validTime, setValidTime] = useState<number>(300);
+  const [errorMessage, setErrorMessage] = useState('');
+
   const inputRef = useRef<HTMLInputElement>(null);
   const startRef = useRef<HTMLInputElement>(null);
 
@@ -66,13 +69,13 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
-    if (isError) {
+    if (errorMessage != '') {
       timeoutId = setTimeout(() => {
-        setIsError(false);
-      }, 3000);
+        setErrorMessage('');
+      }, 4000);
     }
     return () => clearTimeout(timeoutId);
-  }, [isError]);
+  }, [errorMessage]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
@@ -88,28 +91,55 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
 
   const handleClick = async () => {
     if (btnStatus == 'SECOND') {
-      const { status } = (await phoneRequest(phoneNumber.replace(/-/g, ''))) as {
-        status: string;
-      };
-      if (status == 'SUCCESS') {
-        setIsRequest(true);
-        setBtnStatus('THIRD');
+      try {
+        const { status } = (await phoneRequest(phoneNumber.replace(/-/g, ''))) as {
+          status: string;
+        };
+        if (status == 'SUCCESS') {
+          setIsRequest(true);
+          setBtnStatus('THIRD');
+        }
+      } catch (error: any) {
+        const errorResponse = error.response.data;
+        const errorCode = errorResponse.errorCode;
+        const select = signError.find((item) => item.errorCode === errorCode);
+        if (select) {
+          setErrorMessage(select.message);
+          setPhoneNumber('');
+          setBtnStatus('FIRST');
+          startRef.current?.focus();
+          return;
+        }
       }
     }
+
     if (btnStatus == 'THIRD') {
       if (validNumber.length != 6) {
         setValidNumber('');
-        setIsError(true);
+        setErrorMessage('6자리 코드를 입력해주세요.');
         inputRef.current?.focus();
         return;
       }
-      const { status } = (await phoneVerify({
-        phoneNumber: phoneNumber.replace(/-/g, ''),
-        code: Number(validNumber)
-      })) as { status: string };
+      try {
+        const { status } = await phoneVerify({
+          phoneNumber: phoneNumber.replace(/-/g, ''),
+          code: Number(validNumber)
+        });
 
-      if (status == 'SUCCESS') {
-        onNext(phoneNumber);
+        if (status == 'SUCCESS') {
+          onNext(phoneNumber);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (error: any) {
+        const errorResponse = error.response.data;
+        const errorCode = errorResponse.errorCode;
+        const select = signError.find((item) => item.errorCode === errorCode);
+        if (select) {
+          setErrorMessage(select.message);
+          setValidNumber('');
+          inputRef.current?.focus();
+          return;
+        }
       }
     }
   };
@@ -179,7 +209,17 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
       </motion.div>
 
       {isRequest && (
-        <>
+        <motion.div
+          initial={{ opacity: 0, translateX: -90 }}
+          transition={{
+            duration: 0.4,
+            ease: 'easeInOut',
+            delay: 0.3
+          }}
+          animate={{
+            opacity: 1,
+            translateX: 0
+          }}>
           <div className="mt-[48px] border-b border-neutral-300">
             <div className="pb-2 flex">
               <div className="flex-grow flex">
@@ -199,14 +239,14 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
               </div>
             </div>
           </div>
-          {isError ? (
+          {errorMessage != '' ? (
             <div className="text-red-700 font-semibold font-pretendard text-xs">
-              *올바르지 않은 코드입니다.
+              {errorMessage}
             </div>
           ) : (
             ''
           )}
-        </>
+        </motion.div>
       )}
     </div>
   );
