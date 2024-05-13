@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import ToBack from '../shared/sign/ToBack';
 import { SignupBtnStatus } from '@/models/signupBtnStatus';
@@ -99,7 +98,7 @@ const PhoneCertification = ({ onNext }: PhoneCertificationProps) => {
           setIsRequest(true);
           setBtnStatus('THIRD');
         }
-      } catch (error: any) {
+      } catch (error: string) {
         const errorResponse = error.response.data;
         const errorCode = errorResponse.errorCode;
         const select = signError.find((item) => item.errorCode === errorCode);

@@ -14,7 +14,7 @@ const JobPosition = ({ setJobModal, setSelectedJob, selectedJob }: JobPositionPr
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   const [selectPosition, setSelectPosition] = useState<string | null>(null);
   const [initialPosition, setInitialPosition] = useState<string>(selectedJob);
 

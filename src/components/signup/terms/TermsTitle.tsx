@@ -1,5 +1,6 @@
 import React, { MouseEvent } from 'react';
 //
+/* eslint-disable no-unused-vars */
 interface TermsTitleProps {
   checked: boolean;
   onChange: (e: MouseEvent<HTMLElement>, checked: boolean) => void;

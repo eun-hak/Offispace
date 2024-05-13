@@ -1,5 +1,5 @@
 import React, { Dispatch, MouseEvent } from 'react';
-
+/* eslint-disable no-unused-vars */
 interface TermsItemProps {
   title: string;
   description: string;
