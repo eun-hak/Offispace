@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
 import React, { Dispatch, MouseEvent, useEffect, useState } from 'react';
 import TermsTitle from './terms/TermsTitle';
 import { 약관목록 } from '@constant/temrs';

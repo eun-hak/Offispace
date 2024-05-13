@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import ToBack from '../shared/sign/ToBack';
 import { SignupBtnStatus } from '@/models/signupBtnStatus';

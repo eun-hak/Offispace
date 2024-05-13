@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 import React, { SetStateAction, useEffect, useState } from 'react';
 import ToBack from '../shared/sign/ToBack';
 import Image from 'next/image';
